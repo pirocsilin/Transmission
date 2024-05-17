@@ -1,0 +1,60 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpTelemetryData";
+option java_package = "ru.stc.rdmp";
+
+import "GeoData.proto";
+import "LnsRefPointState.proto";
+import "UavIdentity.proto";
+import "UavState.proto";
+
+/// Данные телеметрии БЛА
+message Telemetry
+{
+	/// Момент к которому относятся координаты, unix-time, мс
+	required uint64 timestamp = 1;
+	/// Идентификатор БЛА
+	required UavIdentity id = 2; 
+	/// Координаты БЛА
+	required Point position = 3;
+	/// Ориентация БЛА
+	optional Orientation orientation = 4;
+	/// Путевой угол БЛА, градусы
+	optional double gpsCourse = 5;
+	/// Путевая скорость, м/с
+	optional double gpsSpeed = 6;
+	/// Воздушная скорость, м/с
+	optional double aerialSpeed = 7;
+	/// Барометрическая высота, м
+	optional double aerialAlt = 8;
+	/// Вертикальная скорость, м/с
+	optional double verticalSpeed = 9;
+	/// Ориентация камеры, относительно БЛА
+	optional Orientation cameraOrientation = 10;
+	/// Ориентация камеры, относительно горизонта и севера
+	optional Orientation absoluteCameraOrientation = 11;
+	/// Произвольное описание БЛА или его состояния
+	optional string description = 12;
+ 	/// Состояние БЛА
+	optional UavState uavState = 13;
+	/// Состояние опорной станции ЛНС
+	optional LnsRefPointState lnsRefPointState = 14;
+}
+
+message CameraInfo
+{
+	/// Момент к которому относится информация о камере, unix-time, мс
+	required uint64 timestamp = 1;
+	/// Идентификатор БЛА
+	required UavIdentity id = 2;
+	/// Ориентация камеры, относительно горизонта и севера
+	required Orientation absoluteCameraOrientation = 3;
+	/// Азимут камеры относительно севера
+	required double cameraAzimuth = 4;
+	/// Угол места камеры относительно горизонта
+	required double cameraElevation = 5;
+	
+}

@@ -1,0 +1,103 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpGeoData";
+option java_package = "ru.stc.rdmp";
+
+/// Географические координаты (по-умолчанию WGS-84)
+message GeoCoordinates
+{
+	/// Широта, градусы
+	required double latitude = 1;
+	/// Долгота, градусы
+	required double longitude = 2;
+	/// Высота, метры
+	required double altitude = 3;
+	/// Номер системы координат по номенклатуре EPSG
+	/// Если не указан, то предполагается, что координаты
+	/// заданы в WGS-84
+	optional uint32 epsg = 4;
+}
+
+/// Координаты объекта в прямоугольной системе координат
+message RectCoordinates
+{
+	/// X-координата, м
+	required double x = 1;
+	/// Y-координата, м
+	required double y = 2;
+	/// Высота, м
+	required double z = 3;
+	/// Номер системы координат (и проекции) по номенклатуре EPSG
+	/// Если не указан, то предполагается, что координаты
+	/// заданы в системе СК-42, в проекции Гаусса-Крюгера,
+	/// а номер зоны присутствует в Y-координате
+	optional uint32 epsg = 4;
+}
+
+/// Ориентация объекта
+message Orientation
+{
+	/// Крен, градусы
+	required float roll = 1;
+	/// Тангаж, градусы
+	required float pitch = 2;
+	/// Склонение, градусы
+	required float yaw = 3;
+}
+
+message DeviationByAxis{
+	/// X-координата, м
+	required double stdDevX = 1;
+	/// Y-координата,  вверх
+	required double stdDevY = 2;
+	/// Высота, м
+	required double stdDevZ = 3;
+}
+message Deviation{
+	optional double StandartDeviation = 1;
+	optional DeviationByAxis byAxis = 2; 
+}
+
+/// Координаты точки на местности
+message Point
+{
+	/// Географическое представление координат
+	optional GeoCoordinates geo = 1;
+	/// Прямоугольное представление координат
+	optional RectCoordinates rect = 2;
+	/// Среднеквадратичная ошибка определения координат
+	optional Deviation Deviation = 3;
+}
+
+/// Структура для задания диапазона типа float
+message FloatRange
+{
+	/// Левая граница диапазона
+	required float rangemin = 1;
+	/// Правая граница диапазона
+	required float rangemax = 2;
+}
+
+/// Способ задания высоты
+enum HeightReference
+{
+	/// Высота относительно уровня моря (по умолчанию)
+	ZeroRef = 1;
+	/// Высота задается относительно точки старта БЛА
+	StartAsRef = 2;
+	/// Высота задается относительно расположения объектов разведки
+	RoiAsRef = 3;
+}
+
+/// Ограничения по высотам полета
+/// Значение SpecificTaskType: AltitudeResctrictions
+message AltitudeRestriction
+{
+	/// Разрешенный диапазон высот полета, м
+	optional FloatRange heightRange = 2;
+	/// Способ задания высоты
+	optional HeightReference heightRef = 3 [default = ZeroRef];
+}

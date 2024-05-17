@@ -1,0 +1,290 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpInfoPacket";
+option java_package = "ru.stc.rdmp";
+
+/// Информационный пакет
+message InfoPacket
+{
+	/// Возможные типы пакета
+	enum PacketType
+	{
+		/// Уведомление о получении пакета (в обе стороны)
+		Notification = 1;
+		/// Развед. донесение (от НСУ)
+		Target = 2;
+		/// Изображение (от НСУ)
+		Pixmap = 3;
+		/// Фрагмент видеозаписи (от НСУ)
+		Video = 4;
+		/// Полетное задание (к НСУ)
+		FlightPlan = 5;
+ 		/// Маршрут полета (от НСУ)
+ 		Route = 6;
+ 		/// Телеметрия (от НСУ)
+		Telemetry = 7;
+		/// Обнаружение сервисов
+		DiscoveryBeacon = 8;
+		/// Боевое распоряжения (к НСУ)
+		OperationsInstructions = 9;
+		/// Структура воздушного пространства (к НСУ)
+		AirspaceStructure = 10;
+		/// Обнаружение сервисов для простых устройств
+		DiscoveryBeaconLite = 11;
+		/// Доклад о готовности к выполнению боевого распоряжения
+		OperationsInstructionsReport = 12;
+		/// Запрос информации о сервисе
+		DiscoveryBeaconRequest = 13;
+		/// Фрагмент файла
+		FileFragment = 14;
+		/// Запрос файла
+		FileRequest = 15;
+		/// Запрос фото плана
+		PhotoPlanRequest = 16;
+		/// Ответ на запрос фото плана
+		PhotoPlanResponse = 17;
+		/// Разведдонесение (РТР) с информацией о вскрытом ИРИ (RtrMessage)
+		RtrMessage = 18;
+        /// Состояние фортиса
+        FortisState = 19;
+        /// Задание на подавление источников
+        AttackRlsTask = 20;
+        /// Ответ на задание на подавление источников
+        AttackRlsTaskAnswer = 21;
+        /// Задание на поиск источников
+        SearchRlsTask = 22;
+        /// Ответ на задание на поиск источников
+        SearchRlsAnswer = 23;
+		///Расширенное состояние нагрузок на БЛА рассылаемое на земле станцией управления
+	    UavStateExtended = 24;
+		/// Метеоданные борта (от НСУ)
+		MeteoData = 25;
+		/// Область наблюдения камерой
+		ViewArea = 26;
+		/// Информация о состоянии камеры
+		CameraInfo = 27;
+
+		/// Сообщение о вычислительной задаче
+		TaskMessage = 28;
+
+        /// Внутренние типы пакетов для БЛА Орлан-10
+
+		/// Информация о сопрягаемом ПО
+		HandShake = 0x00011100;
+
+		/// Состояние радиосети
+		KtpState = 0x00100001;
+
+		/// Разведдонесение от АРМ подавления ППРЧ сигналов
+		/// EwfReconMessage
+		EwfRecon = 0x00101001;
+		/// Сообщение о начале, конце работы, 
+		/// измении состояния комплекса
+		EwfUserAction = 0x00101002;
+		/// Сервисное сообщение о измении состояния оборудования
+        /// для логгирования работы системы
+		EwfServiceMessage = 0x00101003;
+		/// Команды для удаленного управления режимом 
+		/// подавления сигналов ППРЧ
+		EwfRemoteCommands = 0x00101004;
+		/// Подтверждения для команд для удаленного управления режимом 
+		/// подавления сигналов ППРЧ
+		EwfRemoteCommandsAck = 0x00101005;
+		/// Сеть с удаленного источника в режиме подавления ППРЧ
+		EwfRemoteNetwork = 0x00101006;
+
+		/// Донесение от АРМ подавления навигационного поля
+		/// SatelliteSuppressionMessage
+		SatelliteSuppressionRecon = 0x00102001;
+		/// Запрос доступных режимов работы подавления НП
+		/// AvailableModesRequest
+		SatelliteSuppressionAvailableModesRequest = 0x00102002;
+		/// Доступные режимы работы подавления НП
+		/// AvailableModesOfSatelliteSupression
+		SatelliteSuppressionAvailableModesResponse = 0x00102003;
+		/// Донесение от АРМ подавления навигационного поля
+		/// SatelliteSupressionExtendedMessage
+		SatelliteSuppressionExtendedRecon = 0x00102004;
+
+		/// Установка маршрута в режиме искажения НП и старт искажения
+		/// SatelliteStartImitation
+		SatelliteStartImitationTask = 0x00102005;
+		/// Старт подавления
+		/// SatelliteStartSuppression
+		SatelliteStartSuppressionTask = 0x00102006;
+		/// Остановка воздействия
+		/// SatelliteStop
+		SatelliteStopTask = 0x00102007;
+		/// Подтверждение о выполнении задачи
+		/// SatelliteTaskReply
+		SatelliteTaskReply = 0x00102008;
+		/// Состояние нагрузки
+		/// SatellitePayloadStatus
+		SatellitePayloadStatus = 0x00102009;
+		/// Состояние нагрузки - запрос
+		/// SatellitePayloadStatusRequest
+		SatellitePayloadStatusRequest = 0x00102010;
+		/// Информация о цели
+		/// SatelliteTargetInfo
+		SatelliteTargetInfo = 0x00102011;
+		/// Информация об угловых параметрах цели
+		/// SatelliteTargetAngleInfo
+		SatelliteTargetAngleInfo = 0x00102012;
+
+		/// Управление "полетом по камере" 
+		NpuCameraFlightRequest = 0x00103001;
+		/// Статус "полета по камере" 
+		NpuCameraFlightResponse = 0x00103002;
+		/// Указание координат для "полета по камере"
+		NpuCameraFlightPointer = 0x00103003;
+		/// Маркер для отображения на карте НПУ
+		NpuShowMarker = 0x00103004;
+		/// Запрос статуса "полета по камере" 
+		NpuCameraFlightStatusRequest = 0x00103005;
+
+		/// Информация о местоположении АРМа
+		/// Запрос (PositionRequest)
+		GetPositionRequest = 0x00104001;
+		/// Ответ (PositionResponse)
+		GetPositionResponse = 0x00104002;
+		
+		PikeCamState = 0x001049001;
+		PikeCamCommand = 0x001049002;
+		PikeCamAlarmState = 0x001049003;
+		PikeRoute = 0x001049004;
+
+		/// Обслуживание стрельбы
+		FireSupportResponse = 0x00105005;
+		/// Засечка разрыва (устаревший пакет, используйте возможности FireSupportResponse)
+		BurstInfo = 0x00105006;
+		/// Статус полета
+		FlightStatus = 0x00105007;
+		///Запрос корректировки
+		FireAdjustmentRequest = 0x00105008;
+		///Ответ на корректировку
+		FireAdjustmentAnswer = 0x00105009;
+		///Информация о выходе объекта к точке встречи
+		MeetingPoint = 0x00105010;
+
+        /// Запрос ресурсов комплекса
+		MissionResourcesMessage =  0x00106005;
+        /// Задание на обслуживание стрельбы
+        FireSupportTask = 0x00110002;
+ 		/// Запрос метеоданных (Данные бюллетеня «Метеосредний»/ «Метеодействительный»)
+		MeteoRequest = 0x00110006;
+		/// Метеоданные (Данные бюллетеня «Метеосредний»)
+		MeteoAvgResponse = 0x00110007;
+		/// Справка о метеусловиях в районах
+		MeteoSituationInfo = 0x00110008;
+		/// Метеоданные 2 (Данные бюллетеня «Метеодействительный»)
+		MeteoResponse = 0x00110009;
+		/// Запрос данных о среднем ветре в районе цели
+		AvgWindRequest = 0x001100010;
+		/// Данные о среднем ветре в районе цели
+		AvgWindResponse = 0x00110011;
+		/// Неформализованные распоряжения / донесения
+		InformalMessage = 0x00110012;
+		/// Запрос бюллетеня «Метеосредний» в заданной области
+		GeoMeteoRequest = 0x001100013;
+		/// Данные бюллетеня «Метеосредний» в заданной области
+		GeoMeteoResponse = 0x00110014;
+		/// Разведдонесение от АРМ пеленгатора в УКВ диапазоне
+		/// с информацией о вскрытом ИРИ (UhfDfSourceMessage)
+		UhfSourceInfo = 0x00201001;
+		/// Разведдонесение от АРМ пеленгатора в УКВ диапазоне
+		/// с информацией о РЭО (UhfDfEesMessage) (РЭО Electornic environment situation)
+		UhfEesInfo = 0x00201002;
+
+		/// Разведдонесение от АРМ РТР (Фортис) 
+		/// с информацией о вскрытом ИРИ РТО (РЛС) (RtrMessage)
+		RtrSourceInfo = 0x00201003;
+
+		/// Разведдонесение от АРМ РЛО (Фортис) 
+		/// с информацией о вскрытом ИРИ РТО (РЛС) (RloMessage)
+		RloSourceInfo = 0x00201004;
+
+		/// Разведдонесение от АРМ РЛО (Фортис) 
+		/// с информацией о вскрытом ИРИ АИС (РЛС) (RloMessage)
+		AisSourceInfo = 0x00201005;
+	
+		/// Донесения АРМ управления активными полезными нагрузками
+		/// -- управление комплексом 3GPP
+		Active3gpp = 0x00202001;
+
+		/// Управление комплексом Shelest
+		ActiveShelest = 0x00202005;
+		
+		/// Информация об обнаруженных РЛС. СПО Подавитель
+		RadarDetectorMessage = 0x00202006;
+		
+		/// Маска с информациях об эфемеридах
+		EphemerisMask = 0x00120001;
+		/// Данные с эфемеридой для конкретного спутника
+		EphemerisData = 0x00120002;
+		/// Запрос эфемерид
+		RequestEphemerisData = 0x00120003;
+		/// Время обновления альманаха
+		AlmanacMask = 0x00120004;
+		/// Альманах для навигационной системы
+		Almanac = 0x00120005;
+
+		/// Результат выполнения задания от комплекса "Вереск"
+		VereskResult = 0x00203001;
+		
+		/// минимальное значение маски для типа пакета dfPost
+		DfPostTypeValueMin = 0x00206000;
+		/// Установление соединения с dfPost
+		DfPostRegistration = 0x00206001;
+		/// Контроль соединения с dfPost
+		DfConnectionControl = 0x00206002;
+		/// Постановка задания на ACARS, упрощённый вариант
+		DfSimpleACARSTask = 0x00206003;
+		/// Постановка задания на GMDSS-DSC UHF, упрощённый вариант
+		DfSimpleGMDSSTask = 0x00206004;
+		/// Постановка задания на VDL-2, упрощённый вариант
+		DfSimpleVDLm2Task = 0x00206005;
+		/// Управление упрощённым вариантом задания
+		DfSimpleTaskControl = 0x00206006;
+		/// Информация о статусе выполнения задания в dfPost, упрощённый вариант
+		DfSimpleTaskStatus = 0x00206007;
+		/// Результат работы dfPost, упрощённый вариант
+		DfSimpleResult = 0x00206008;
+		/// Состояние устройств
+		DfTechnicalStateInfo = 0x00206009;
+		/// Параметры задания на поиск-наблюдение
+		DfSWTaskParams = 0x00206010;
+		/// Результаты задания на поиск-наблюдение
+		DfSWTaskResults = 0x00206011;
+		/// Удалённое управление РПУ
+		DfDirectAudioReceiverCtrl = 0x00206012;
+		/// Информация о возможностях РПУ по системе WiFi
+		DfWiFiSigBoadInfo = 0x00206013;
+		/// Параметры задания WiFi
+		DfWiFiTask = 0x00206014;
+		/// Результаты Задания WiFi
+		DfWiFiTaskResult = 0x00206015;
+		/// Максимальное значение маски для типа пакета dfPost
+		DfPostTypeValueMax = 0x00206999;
+		
+		PbDocStruct = 0x00999001;
+		PbDocNotify = 0x00999002;
+		/// Сообщение к DMPost от комплекса SkySensor
+		SkySensorReport = 0x00204001;
+		/// Запрос к SkySensor о данных за период
+		SkySensorResultRequest = 0x00204002;
+		/// Запрос к SkySensor
+		SkySensorRequest = 0x00204003;
+		/// Ответ SkySensor
+		SkySensorResponse = 0x00204004;
+	}
+	
+	/// Тип пакета
+	required uint32 type = 1;
+	/// Идентификатор пакета
+	required uint32 id = 2;
+	/// Данные пакета
+	optional bytes data = 3;
+}

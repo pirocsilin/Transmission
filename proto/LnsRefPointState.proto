@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpLnsRefPointState";
+option java_package = "ru.stc.rdmp";
+
+/// Состояние наземной станции
+message LnsRefPointState
+{
+	/// Зеркалировать решение ЛНС относительно линии, соединяющую этот узел с НПУ
+	optional bool mirrorLns = 1;
+}

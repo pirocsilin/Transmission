@@ -1,0 +1,74 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpUavState";
+option java_package = "ru.stc.rdmp";
+
+import "GeoData.proto";
+import "UavIdentity.proto";
+
+///Дополнительная информация о нагрузке
+message PayloadStateExtended 
+{
+    /// Имеет ли смысл отображать эту нагрузку пользователю или только в специальных случаях
+	required bool userVisibile = 1;	
+    /// Момент последнего включения, unix-time, мс
+	required uint64 timestamp = 2; 
+}
+
+/// Состояние полезной нагрузки в 2DNpu
+message PayloadState 
+{
+	/// Тип нагрузки (Payload)
+	required uint32 type = 1;
+	/// Номер нагрузки (номер кнопки в НПДУ) (отрицательные номера должны восприниматься как отсутствие нужной кнопки в НПУ)
+	required uint32 number = 2;
+	/// Питание нагрузки (вкл/выкл на борту)
+	required bool power = 3;
+	/// Описание нагрузки
+	optional string description = 4;
+	/// Дополнительная информация о нагрузке
+	optional PayloadStateExtended extedndInfo = 5;	
+	///Типы нагрузок БЛА
+	///Значение  enum задаёт номер типа нагрузки в  payloads в UavIdentity
+	enum Payload
+	{
+		/// Тип неизвестен
+		Unknown		= 0;
+		/// Подвес
+		Gimbal		= 1;
+ 		/// Поворотная (ГСК) камера
+		PtzCamera	= 2;
+		/// ВСКС
+		Vsks		= 4;
+		/// Усилитель
+		Amp			= 5;
+		/// Навигация
+		Navigation	= 6;
+		/// Лев. ВБС
+		VbsLeft		= 7;
+		/// Прав. ВБС
+		VbsRight	= 8;
+	}	
+}
+
+///Расширенное состояние БЛА
+message UavStateExtended
+{
+	required UavIdentity id = 1;
+	/// Состояние нагрузок
+	repeated PayloadState payloads	= 2;
+	/// Битовая маска имеющихся на борту нагрузок номер бита соответствует номеру enum в Payload, например payloadFlags[0] 1 бит означает наличие или отсутствие подвеса
+	required bytes payloadsFlags = 3;
+    /// Момент формирования, unix-time, мс
+	required uint64 timestamp = 4; 
+}
+
+/// Состояние БЛА
+message UavState
+{
+	/// Состояние нагрузок
+	repeated PayloadState payloads	= 3;	
+}

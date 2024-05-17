@@ -1,0 +1,54 @@
+syntax = "proto2";
+
+package Rdmp;
+
+option optimize_for = LITE_RUNTIME;
+option java_outer_classname = "RdmpUavIdentity";
+option java_package = "ru.stc.rdmp";
+
+/// Типы БЛА или других "своих" объектов 
+enum UavType
+{
+	/// Орлан-10 (резервируем префикс 0x0010 за О-10,
+	/// с этого префикса начинаются все подтипы БЛА О-10)
+	Orlan10 	= 0x00100000;
+	/// Орлан-10 "Универсал"
+	Orlan10_U	= 0x00100001;
+	/// Орлан-10 "Controp"
+	Orlan10_C	= 0x00100002;
+	/// и т.д. Важно, чтобы у каждого типа БЛА
+	/// был свой префикс
+
+	/// Неподвижная наземная станция
+	GroundStation = 0x0A010000;
+	/// Опорная точка ЛНС
+	LnsRefPoint = 0x0A010001;
+
+	/// Префикс зарезервирован за подвижными объектами
+    /// типа "Вертолет"
+	Helicopter	= 0x0F010000;
+
+	/// Префикс зарезервирован за подвижными объектами
+    /// типа "Мишень"
+	Mark = 0x1F010000;
+	      
+	Max =  0x4FFFFFFF;
+}
+
+/// Описание БЛА
+message UavIdentity
+{	
+	/// Идентификатор БЛА
+	required uint32 id = 1;
+	/// Тип БЛА
+	optional uint32 type = 2;
+	/// Произвольное описание БЛА
+	optional string description = 3;
+};
+
+/// Уникальный идентификатор (UUID) для пакетов
+message Uuid
+{
+	required fixed64 p1 = 1;
+	required fixed64 p2 = 2;
+};
