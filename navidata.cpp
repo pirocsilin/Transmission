@@ -3,7 +3,7 @@
 #include <QString>
 #include "navidata.h"
 
-#define BLA_ID   439        // идентификатор БЛА
+#define BLA_ID   21         // идентификатор БЛА    // 439
 #define BLA_TYPE 0x00100001 // тип Orlan10_U
 #define BLA_DESC "RA-0439G" // описание
 #define WGS_84    4326      // система координат WGS_84
@@ -94,7 +94,7 @@ void NaviData::creatProtobufNaviData(CodNavData &data)
     Rdmp::InfoPacket info;
     info.Clear();
     info.set_type(TYPE_PACK);
-    info.set_id(packId);
+    info.set_id(BLA_ID);                // packId
     info.set_data(serializeAsString);
 
     position.release_geo();
