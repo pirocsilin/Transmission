@@ -181,9 +181,8 @@ void NaviData::slotReadyRead()
             getDataFromByteArray(navData, buff);
 
             emit createLog(QString("Получен пакет № %1").arg(navData.id));
-            emit signalWriteData(navData);
-            //emit signalWriteData(CodNavDataToFile(navData, buff.size()));
-            //emit writeToFile(getDataForWriteToFile(buff, buff.size()));
+            emit signalShowData(navData);
+            emit writeToFile(getDataForWriteToFile(buff, buff.size()));
 
             creatProtobufNaviData(navData);
         }
@@ -206,8 +205,7 @@ void NaviData::slotSendKeepAlive()
 
     socket->writeDatagram(getSendedByteArray(codData), boardIpAddress, boardPort);
 
-    //emit signalWriteCodData(CodDataToFile(codData, sizeof(cod::CodData)));
-    emit writeToFile(getDataForWriteToFile(codData, sizeof (cod::CodData)));
+    emit writeToFile(getDataForWriteToFile(codData, sizeof(cod::CodData)));
 }
 
 void NaviData::slotCnabgeStateSending(bool sign)

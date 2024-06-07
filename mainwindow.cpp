@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, SIGNAL(signalSendData(bool)), &navdata, SLOT(slotCnabgeStateSending(bool)));
     connect(&navdata, SIGNAL(signalSendLog(QString)), this, SLOT(slotWriteLog(QString)));
     //
-    connect(&navdata, SIGNAL(signalWriteData(CodNavData)), this, SLOT(slotWriteData(CodNavData)));
+    connect(&navdata, SIGNAL(signalShowData(CodNavData)), this, SLOT(slotShowData(CodNavData)));
     connect(&navdata, SIGNAL(writeToFile(QByteArray)), &logger, SLOT(slotWriteToFile(QByteArray)));
     //
     connect(this, SIGNAL(signalWriteNavData(bool)), &logger, SLOT(slotSwitchStateRecord(bool)));
@@ -52,8 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lineEdit_ip->setReadOnly(true);
     ui->lineEdit_port->setReadOnly(true);
     //
-    qRegisterMetaType<CodNavDataToFile>("CodNavDataToFile");
-    qRegisterMetaType<CodDataToFile>("CodDataToFile");
     qRegisterMetaType<CodNavData>("CodNavData");
     qRegisterMetaType<NavData>("NavData");
     qRegisterMetaType<CodData>("CodData");
@@ -138,7 +136,7 @@ void MainWindow::slotWriteLog(QString log)
     ui->textBrowser_log->insertPlainText(log);
 }
 
-void MainWindow::slotWriteData(CodNavData data)
+void MainWindow::slotShowData(CodNavData data)
 {
     ui->lineEdit_altitude->setText(QString::number(data.altitude, 'f', 3));
     ui->lineEdit_roll->setText(QString::number(data.roll, 'f', 3));

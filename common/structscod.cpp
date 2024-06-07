@@ -110,30 +110,6 @@ QDataStream &operator>>(QDataStream &stream, HdrCodNavData &out)
     return stream;
 }
 
-QDataStream &operator<<(QDataStream &stream, const CodNavDataToFile &in)
-{
-    stream << in.hdrCodNavData << in.codNavData;
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, CodNavDataToFile &out)
-{
-    stream >> out.hdrCodNavData >> out.codNavData;
-    return stream;
-}
-
-QDataStream &operator<<(QDataStream &stream, const CodDataToFile &in)
-{
-    stream << in.hdrCodNavData << in.codData;
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, CodDataToFile &out)
-{
-    stream >> out.hdrCodNavData >> out.codData;
-    return stream;
-}
-
 QDataStream &operator<<(QDataStream &stream, const CodFrameData &in)
 {
     stream << in.header
@@ -162,56 +138,6 @@ QDataStream &operator>>(QDataStream &stream, CodFrameData &out)
            >> out.frameArray;
 
     return  stream;
-}
-
-// ================================= READ FILE =========================//
-
-void testReadFile(QString fileName)
-{
-    QFile file;
-    file.setFileName(fileName);
-    if(file.open(QIODevice::ReadOnly))
-    {
-        CodNavDataToFile codNavDataToFile;
-        QDataStream in(&file);
-
-        while(!in.atEnd())
-        {
-            in >> codNavDataToFile;
-        }
-    }
-    else
-        qDebug() << "ERROR Open File:" << fileName;
-}
-
-template<typename T>
-QDataStream &operator<<(QDataStream &stream, const DataToFile<T> &data)
-{
-    stream << data.hdrCodNavData
-           << data.data;
-
-    return stream;
-}
-
-template<typename T>
-QDataStream &operator>>(QDataStream &stream, DataToFile<T> &data)
-{
-    stream >> data.hdrCodNavData
-           >> data.data;
-
-    return stream;
-}
-
-QDataStream &operator<<(QDataStream &stream, const ImageDataToFile &data)
-{
-    stream << data.hdrCodNavData << data.image;
-    return stream;
-}
-
-QDataStream &operator>>(QDataStream &stream, ImageDataToFile data)
-{
-    stream >> data.hdrCodNavData >> data.image;
-    return stream;
 }
 
 }

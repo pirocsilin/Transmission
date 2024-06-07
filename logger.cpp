@@ -6,6 +6,8 @@
 #include <QDateTime>
 #include "logger.h"
 
+#define DATE_TIME "yyyy-MM-dd[hh-mm-ss]"
+
 Logger::Logger()
 {
     this->moveToThread(this);
@@ -54,44 +56,6 @@ void Logger::createLog(QString text)
     text = dt.toString("[hh:mm:ss] ") + text + '\n';
 
     emit signalSendLog(text);
-}
-
-void Logger::slotWriteNavData(CodNavDataToFile data)
-{
-    qDebug() << __PRETTY_FUNCTION__;
-
-    if(writeIsAllow && file.isOpen())
-    {
-        QDataStream out(&file);
-        out << data;
-
-        createLog("Данные записаны");
-    }
-}
-
-void Logger::slotWriteCodData(CodDataToFile data)
-{
-    qDebug() << __PRETTY_FUNCTION__;
-
-    if(writeIsAllow && file.isOpen())
-    {
-        QDataStream out(&file);
-        out << data;
-
-        createLog("CodData записан");
-    }
-}
-
-void Logger::slotWriteImageData(QByteArray image)
-{
-//    qDebug() << __PRETTY_FUNCTION__;
-
-//    if(writeIsAllow && file.isOpen())
-//    {
-//        QDataStream out(&file);
-//        out << HdrCodNavData(image.size())
-//            << image;
-//    }
 }
 
 void Logger::slotWriteToFile(QByteArray data)

@@ -74,9 +74,7 @@ public slots:
 
 signals:
     void signalSendLog(QString);
-    void signalWriteData(CodNavData);
-    void signalWriteData(CodNavDataToFile);
-    void signalWriteCodData(CodDataToFile);
+    void signalShowData(CodNavData);
     void writeToFile(QByteArray);
 };
 

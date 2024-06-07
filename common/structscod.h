@@ -34,10 +34,12 @@ uint8_t calcChecksum(const char *in, size_t sz);
 enum class MessageId : uint8_t
 {
     NONE = 0,
+
     //! данные от бортового модуля
     BOARD_NAV_DATA,                 //!< навигационные данные для ОПУ
     BOARD_FRAME_DATA,               //!< пакет с кадром изображения
     BOARD_COD_KEEPALIVE,            //!< сообщение о наличии соединения с КОД-Б
+
     //! данные от наземного модуля
     GROUND_COD_DATA,    //!< данные
 };
@@ -115,91 +117,15 @@ struct CodFrameData
 QDataStream &operator<< (QDataStream& stream, const CodFrameData& in);
 QDataStream& operator>> (QDataStream& stream, CodFrameData& out);
 
-/**
- * @brief Структура CodData для записи в файл
- */
-struct CodNavDataToFile
-{
-    HdrCodNavData hdrCodNavData;
-    CodNavData codNavData;
-
-    CodNavDataToFile(){}
-    CodNavDataToFile(CodNavData& data, int dataSize)
-    {
-        codNavData = data;
-        hdrCodNavData.header = 0xC0DA;
-        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
-        hdrCodNavData.sizeMessage = dataSize;
-    }
-};
-QDataStream& operator<< (QDataStream& stream, const CodNavDataToFile& in);
-QDataStream& operator>> (QDataStream& stream, CodNavDataToFile& out);
-
-struct ImageDataToFile
-{
-    HdrCodNavData hdrCodNavData;
-    QImage image;
-
-    ImageDataToFile(){}
-    ImageDataToFile(QImage& data, int dataSize)
-    {
-        image = data;
-        hdrCodNavData.header = 0xC0DA;
-        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
-        hdrCodNavData.sizeMessage = dataSize;
-    }
-};
-QDataStream &operator<< (QDataStream& stream, const ImageDataToFile& in);
-QDataStream& operator>> (QDataStream& stream, ImageDataToFile out);
-
-template<typename T>
-struct DataToFile
-{
-    HdrCodNavData hdrCodNavData;
-    T data;
-
-    DataToFile(){}
-    DataToFile(T &_data, int dataSize)
-    {
-        data = _data;
-        hdrCodNavData.header = 0xC0DA;
-        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
-        hdrCodNavData.sizeMessage = dataSize;
-    }
-};
-template<typename T>
-QDataStream &operator<< (QDataStream& stream, const DataToFile<T>& in);
-template<typename T>
-QDataStream &operator>> (QDataStream& stream, DataToFile<T>& out);
-
 struct CodData
 {
     HeaderCodData header;   //!< заголовок сообщения с данными
     uint32_t id;            //!< id сообщения
-
     CodData()  { header.id = MessageId::GROUND_COD_DATA; }
 };
 
 QDataStream& operator<< (QDataStream& stream, const CodData& in);
 QDataStream& operator>> (QDataStream& stream, CodData& out);
-
-struct CodDataToFile
-{
-    HdrCodNavData hdrCodNavData;
-    CodData codData;
-
-    CodDataToFile(){}
-    CodDataToFile(CodData& data, int dataSize)
-    {
-        codData = data;
-        hdrCodNavData.header = 0xC0DA;
-        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
-        hdrCodNavData.sizeMessage = dataSize;
-    }
-};
-
-QDataStream& operator<< (QDataStream& stream, const CodDataToFile& in);
-QDataStream& operator>> (QDataStream& stream, CodDataToFile& out);
 
 #pragma pack(pop)
 
@@ -225,16 +151,7 @@ void getDataFromByteArray(T& data, const QByteArray& source)
     in >> data;
 }
 
-template <class T1, class T2>
-void getDataFromByteArray(T1& hdr, T2& data, const QByteArray& source)
-{
-    QDataStream in(source);
-    in.setVersion(QDataStream::Qt_5_7);
-    in.setByteOrder(QDataStream::BigEndian);
-    in >> hdr >> data;
-}
-
-template<class T>
+template <class T>
 QByteArray getDataForWriteToFile(T& data, int size)
 {
     QByteArray ret;
@@ -258,7 +175,6 @@ QByteArray getDataForWriteToFile(T& data, int size)
  * @return true - заголовок структуры валидный
  */
 bool isValidHeaderStructCod(const QByteArray &data);
-void testReadFile(QString fileName);
 
 }
 #endif // STRUCTS_COD_H

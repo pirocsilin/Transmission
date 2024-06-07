@@ -48,7 +48,7 @@ public slots:
     void slotSenderController();
     void slotRecordController();
     void slotWriteLog(QString log);
-    void slotWriteData(CodNavData data);
+    void slotShowData(CodNavData data);
     void recvMipiImage(QImage image);
 
 signals:
