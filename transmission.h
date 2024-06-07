@@ -18,7 +18,7 @@ public:
 
 private:
     const QString dstIpAddress  {"127.0.0.1"};
-    const quint32 dstPort       {6000};
+    const quint32 dstPort       {5800};
 
     uint32_t id {0};
 

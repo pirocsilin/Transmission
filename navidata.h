@@ -32,9 +32,10 @@ public:
     quint32 getMulticastDstPort() { return multicastDstPort; }
 
 private:
+    const QString initialFile {"../src/initial.ini"};
     //
-    QHostAddress srcIpAddress {"127.0.0.1"};    //{"37.0.20.15"};
-    quint32 srcPort {6000};                     //{5800};
+    QHostAddress srcIpAddress {"37.0.20.15"};
+    quint32 srcPort {5800};
     //
     QHostAddress groupIpAddress {"225.0.0.1"};
     quint32 multicastDstPort    {2300};

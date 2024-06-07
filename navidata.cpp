@@ -1,6 +1,7 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QString>
+#include <QFile>
 #include "navidata.h"
 
 #define BLA_ID   21         // идентификатор БЛА    // 439
@@ -31,7 +32,7 @@ void NaviData::slotInit()
     connect(this, &QThread::finished, sendNavTimer.data(), &QTimer::stop);
     connect(this, &QThread::finished, sendKeepAliveTimer.data(), &QTimer::stop);
 
-    //readInitialData();
+    readInitialData();
 
     sendNavTimer->setInterval(1000);
     sendKeepAliveTimer->start(500);
@@ -39,7 +40,10 @@ void NaviData::slotInit()
 
 void NaviData::readInitialData()
 {
-    QSettings settings("initial.ini", QSettings::IniFormat);
+    if(!QFile(initialFile).exists()) return;
+
+    QSettings settings(initialFile, QSettings::IniFormat);
+    qDebug() << settings.isWritable();
 
     srcIpAddress.setAddress(settings.value("srcIpAddress").toString());
     srcPort = settings.value("srcPort").toInt();

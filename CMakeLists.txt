@@ -10,30 +10,32 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#file(GLOB PROTOBUF_LIBRARY "${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/lib/*.a")
-#set(PROTOBUF_INCLUDE_DIR "${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/include/")
-#find_package(protobuf REQUIRED)
-
-#message(===================================)
-#foreach(FILE ${Protobuf_INCLUDE_DIRS})
-#    message("file: ${FILE}")
-#endforeach()
-#message(===================================)
-
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
+
+if(WIN32)
+    set(PATH libs_win)
+elseif(UNIX)
+    set(PATH libs_unix)
+endif()
+
+set(PRTOTO_LIB ${CMAKE_HOME_DIRECTORY}/../${PATH}/protobuf-2.6.1)
+
+if(NOT EXISTS ${PRTOTO_LIB})
+    message(FATAL_ERROR "Not found ${PRTOTO_LIB} !!!")
+endif()
 
 file(GLOB PROTO_FILES ${CMAKE_HOME_DIRECTORY}/proto/*.proto)
 
 set(ProtocolFolder ${CMAKE_HOME_DIRECTORY}/proto_cxx)
 
-#if(EXISTS ${ProtocolFolder})
-#    file(REMOVE_RECURSE ${ProtocolFolder})
-#endif()
+if(EXISTS ${ProtocolFolder})
+    file(REMOVE_RECURSE ${ProtocolFolder})
+endif()
 
-#file(MAKE_DIRECTORY ${ProtocolFolder})
+file(MAKE_DIRECTORY ${ProtocolFolder})
 
-set(ProtocExecute ${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/bin/protoc)
+set(ProtocExecute ${PRTOTO_LIB}/bin/protoc)
 set(ProtoPath     ${CMAKE_HOME_DIRECTORY}/proto)
 set(ProtoCppOut   ${CMAKE_HOME_DIRECTORY}/proto_cxx)
 
@@ -59,7 +61,7 @@ file(GLOB SRC_FILES ${CMAKE_HOME_DIRECTORY}/*.cpp
 
 add_executable(Transmission ${SRC_FILES})
 
-SET(PROTO_INCLUDE "${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/include/")
+SET(PROTO_INCLUDE ${PRTOTO_LIB}//include/)
 
 set(HDR_FILES ${CMAKE_HOME_DIRECTORY}
               ${Protobuf_INCLUDE_DIRS}
@@ -73,13 +75,12 @@ target_include_directories(Transmission PUBLIC ${HDR_FILES})
 
 add_library(protobuf2 STATIC IMPORTED)
 set(PATH_STATIC_LIB_PROTOBUF)
-set(PATH_STATIC_LIB_PROTOBUF ${PATH_STATIC_LIB_PROTOBUF} ${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/lib/libprotobuf.a)
+set(PATH_STATIC_LIB_PROTOBUF ${PATH_STATIC_LIB_PROTOBUF} "${PRTOTO_LIB}/lib/libprotobuf.a")
 set_target_properties(protobuf2 PROPERTIES IMPORTED_LOCATION ${PATH_STATIC_LIB_PROTOBUF})
 
 target_link_libraries(Transmission PRIVATE
                       Qt5::Widgets
                       Qt5::Network
-                      #${Protobuf_LIBRARIES}
                       protobuf2
                       )
 
