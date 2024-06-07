@@ -18,14 +18,26 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->setStyleSheet(STATUS_BAR_STOP);
     ui->statusbar->showMessage("Данные не отправляются");
     ui->textBrowser_log->setStyleSheet(BROWSER_TERMINAL);
-
+    //
+    QWidget *centralWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+    layout->addWidget(ui->tabWidget);
+    centralWidget->setLayout(layout);
+    this->setCentralWidget(centralWidget);
+    //
+    QHBoxLayout *cameraLayout = new QHBoxLayout;
+    cameraWidget.setMaximumHeight(860);
+    cameraWidget.setMaximumWidth(1075);
+    cameraLayout->addWidget(&cameraWidget);
+    ui->tab_2->setLayout(cameraLayout);
+    //
     connect(this, SIGNAL(signalBindSocket()),   &navdata, SLOT(bindReceiveSocket()));
     connect(this, SIGNAL(signalBindSocket()),   &navdata, SLOT(bindMulticastSocket()));
     connect(this, SIGNAL(signalSendData(bool)), &navdata, SLOT(slotCnabgeStateSending(bool)));
     connect(&navdata, SIGNAL(signalSendLog(QString)), this, SLOT(slotWriteLog(QString)));
+    //
     connect(&navdata, SIGNAL(signalWriteData(CodNavData)), this, SLOT(slotWriteData(CodNavData)));
-    connect(&navdata, SIGNAL(signalWriteCodData(CodDataToFile)), &logger, SLOT(slotWriteCodData(CodDataToFile)));
-    connect(&navdata, SIGNAL(signalWriteData(CodNavDataToFile)), &logger, SLOT(slotWriteNavData(CodNavDataToFile)));
+    connect(&navdata, SIGNAL(writeToFile(QByteArray)), &logger, SLOT(slotWriteToFile(QByteArray)));
     //
     connect(this, SIGNAL(signalWriteNavData(bool)), &logger, SLOT(slotSwitchStateRecord(bool)));
     connect(&logger, SIGNAL(signalSendLog(QString)), this, SLOT(slotWriteLog(QString)));
@@ -45,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<CodNavData>("CodNavData");
     qRegisterMetaType<NavData>("NavData");
     qRegisterMetaType<CodData>("CodData");
+    //
+    prepareVideoThread();
 }
 
 MainWindow::~MainWindow()
@@ -137,6 +151,24 @@ void MainWindow::slotWriteData(CodNavData data)
     ui->lineEdit_aerialSpeed->setText(QString::number(data.aerialSpeed, 'f', 3));
     ui->lineEdit_aerialAltitude->setText(QString::number(data.aerialAlt, 'f', 3));
     ui->lineEdit_verticalSpeed->setText(QString::number(data.verticalSpeed, 'f', 3));
+}
+
+void MainWindow::recvMipiImage(QImage image)
+{
+    cameraWidget.setImage(image);
+}
+
+void MainWindow::prepareVideoThread()
+{
+    videoReceiver.reset(new VideoReceiverUdp);
+    videoReceiver->moveToThread(&videoReceiverThread);
+    connect(&videoReceiverThread, &QThread::started,  videoReceiver.get(),  &VideoReceiverUdp::startTransceiving);
+    connect(&videoReceiverThread, &QThread::finished, videoReceiver.get(),  &QObject::deleteLater);
+
+    connect(videoReceiver.get(), &VideoReceiverUdp::writeToFile, &logger, &Logger::slotWriteToFile);
+    connect(videoReceiver.get(), &VideoReceiverUdp::sendImage, this,  &MainWindow::recvMipiImage);
+
+    videoReceiverThread.start();
 }
 
 void MainWindow::showEvent(QShowEvent *event)

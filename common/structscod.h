@@ -1,10 +1,11 @@
-#ifndef STRUCTS_COD_H
+﻿#ifndef STRUCTS_COD_H
 #define STRUCTS_COD_H
 
 #include <stdint.h>
 #include <stddef.h>
 #include <QDataStream>
 #include <QDateTime>
+#include <QImage>
 #include <QFile>
 #include <QDebug>
 
@@ -34,8 +35,9 @@ enum class MessageId : uint8_t
 {
     NONE = 0,
     //! данные от бортового модуля
-    BOARD_NAV_DATA,     //!< навигационные данные для ОПУ
-
+    BOARD_NAV_DATA,                 //!< навигационные данные для ОПУ
+    BOARD_FRAME_DATA,               //!< пакет с кадром изображения
+    BOARD_COD_KEEPALIVE,            //!< сообщение о наличии соединения с КОД-Б
     //! данные от наземного модуля
     GROUND_COD_DATA,    //!< данные
 };
@@ -95,6 +97,24 @@ struct HdrCodNavData
 QDataStream& operator<< (QDataStream& stream, const HdrCodNavData& in);
 QDataStream &operator>> (QDataStream& stream, HdrCodNavData& out);
 
+struct CodFrameData
+{
+    HeaderCodData header;           //!< заголовок сообщения
+    uint32_t creationFrameTime;     //!< время формерования кадра
+    uint8_t countLine;              //!< количество строк в пакете
+    uint32_t numberFrame;           //!< номер текущего кадра
+    uint16_t numberFirstLine;       //!< номер первой строки в пакете
+    uint16_t width;                 //!< ширина кадра в пикселях
+    uint16_t height;                //!< высота кадра в пикселях
+    uint8_t bits;                   //!< количество бит на пиксель
+    QByteArray frameArray;          //!< пиксели изображения построчно
+
+    CodFrameData()  { header.id = MessageId::BOARD_FRAME_DATA; }
+};
+
+QDataStream &operator<< (QDataStream& stream, const CodFrameData& in);
+QDataStream& operator>> (QDataStream& stream, CodFrameData& out);
+
 /**
  * @brief Структура CodData для записи в файл
  */
@@ -112,9 +132,45 @@ struct CodNavDataToFile
         hdrCodNavData.sizeMessage = dataSize;
     }
 };
-
 QDataStream& operator<< (QDataStream& stream, const CodNavDataToFile& in);
 QDataStream& operator>> (QDataStream& stream, CodNavDataToFile& out);
+
+struct ImageDataToFile
+{
+    HdrCodNavData hdrCodNavData;
+    QImage image;
+
+    ImageDataToFile(){}
+    ImageDataToFile(QImage& data, int dataSize)
+    {
+        image = data;
+        hdrCodNavData.header = 0xC0DA;
+        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
+        hdrCodNavData.sizeMessage = dataSize;
+    }
+};
+QDataStream &operator<< (QDataStream& stream, const ImageDataToFile& in);
+QDataStream& operator>> (QDataStream& stream, ImageDataToFile out);
+
+template<typename T>
+struct DataToFile
+{
+    HdrCodNavData hdrCodNavData;
+    T data;
+
+    DataToFile(){}
+    DataToFile(T &_data, int dataSize)
+    {
+        data = _data;
+        hdrCodNavData.header = 0xC0DA;
+        hdrCodNavData.receiveTime = QDateTime::currentMSecsSinceEpoch();
+        hdrCodNavData.sizeMessage = dataSize;
+    }
+};
+template<typename T>
+QDataStream &operator<< (QDataStream& stream, const DataToFile<T>& in);
+template<typename T>
+QDataStream &operator>> (QDataStream& stream, DataToFile<T>& out);
 
 struct CodData
 {
@@ -195,8 +251,6 @@ QByteArray getDataForWriteToFile(T& data, int size)
 
     return ret;
 }
-
-//QByteArray getDataForWriteToFile(const QByteArray& source);
 
 /**
  * @brief isValidHeaderStructBcvm

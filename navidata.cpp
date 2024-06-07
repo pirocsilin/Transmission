@@ -31,7 +31,7 @@ void NaviData::slotInit()
     connect(this, &QThread::finished, sendNavTimer.data(), &QTimer::stop);
     connect(this, &QThread::finished, sendKeepAliveTimer.data(), &QTimer::stop);
 
-    readInitialData();
+    //readInitialData();
 
     sendNavTimer->setInterval(1000);
     sendKeepAliveTimer->start(500);
@@ -122,7 +122,7 @@ void NaviData::creatTransportHeader(Rdmp::InfoPacket &info)
     info.release_data();
 
     // CHECK
-    deserializeNavData(lastNaviData);
+    // deserializeNavData(lastNaviData);
 }
 
 void NaviData::deserializeNavData(QByteArray &sData)
@@ -178,7 +178,8 @@ void NaviData::slotReadyRead()
 
             emit createLog(QString("Получен пакет № %1").arg(navData.id));
             emit signalWriteData(navData);
-            emit signalWriteData(CodNavDataToFile(navData, buff.size()));
+            //emit signalWriteData(CodNavDataToFile(navData, buff.size()));
+            //emit writeToFile(getDataForWriteToFile(buff, buff.size()));
 
             creatProtobufNaviData(navData);
         }
@@ -201,7 +202,8 @@ void NaviData::slotSendKeepAlive()
 
     socket->writeDatagram(getSendedByteArray(codData), boardIpAddress, boardPort);
 
-    emit signalWriteCodData(CodDataToFile(codData, sizeof(cod::CodData)));
+    //emit signalWriteCodData(CodDataToFile(codData, sizeof(cod::CodData)));
+    emit writeToFile(getDataForWriteToFile(codData, sizeof (cod::CodData)));
 }
 
 void NaviData::slotCnabgeStateSending(bool sign)

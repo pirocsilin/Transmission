@@ -58,7 +58,7 @@ void Logger::createLog(QString text)
 
 void Logger::slotWriteNavData(CodNavDataToFile data)
 {
-    //qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << __PRETTY_FUNCTION__;
 
     if(writeIsAllow && file.isOpen())
     {
@@ -71,7 +71,7 @@ void Logger::slotWriteNavData(CodNavDataToFile data)
 
 void Logger::slotWriteCodData(CodDataToFile data)
 {
-    //qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << __PRETTY_FUNCTION__;
 
     if(writeIsAllow && file.isOpen())
     {
@@ -79,6 +79,27 @@ void Logger::slotWriteCodData(CodDataToFile data)
         out << data;
 
         createLog("CodData записан");
+    }
+}
+
+void Logger::slotWriteImageData(QByteArray image)
+{
+//    qDebug() << __PRETTY_FUNCTION__;
+
+//    if(writeIsAllow && file.isOpen())
+//    {
+//        QDataStream out(&file);
+//        out << HdrCodNavData(image.size())
+//            << image;
+//    }
+}
+
+void Logger::slotWriteToFile(QByteArray data)
+{
+    if(writeIsAllow && file.isOpen())
+    {
+        QDataStream out(&file);
+        out.writeRawData(data.data(), data.size());
     }
 }
 
@@ -91,3 +112,4 @@ void Logger::slotSwitchStateRecord(bool state)
     else
         closeFile();
 }
+

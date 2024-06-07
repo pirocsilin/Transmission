@@ -134,6 +134,36 @@ QDataStream &operator>>(QDataStream &stream, CodDataToFile &out)
     return stream;
 }
 
+QDataStream &operator<<(QDataStream &stream, const CodFrameData &in)
+{
+    stream << in.header
+           << in.creationFrameTime
+           << in.countLine
+           << in.numberFrame
+           << in.numberFirstLine
+           << in.width
+           << in.height
+           << in.bits
+           << in.frameArray;
+
+    return  stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, CodFrameData &out)
+{
+    stream >> out.header
+           >> out.creationFrameTime
+           >> out.countLine
+           >> out.numberFrame
+           >> out.numberFirstLine
+           >> out.width
+           >> out.height
+           >> out.bits
+           >> out.frameArray;
+
+    return  stream;
+}
+
 // ================================= READ FILE =========================//
 
 void testReadFile(QString fileName)
@@ -152,6 +182,36 @@ void testReadFile(QString fileName)
     }
     else
         qDebug() << "ERROR Open File:" << fileName;
+}
+
+template<typename T>
+QDataStream &operator<<(QDataStream &stream, const DataToFile<T> &data)
+{
+    stream << data.hdrCodNavData
+           << data.data;
+
+    return stream;
+}
+
+template<typename T>
+QDataStream &operator>>(QDataStream &stream, DataToFile<T> &data)
+{
+    stream >> data.hdrCodNavData
+           >> data.data;
+
+    return stream;
+}
+
+QDataStream &operator<<(QDataStream &stream, const ImageDataToFile &data)
+{
+    stream << data.hdrCodNavData << data.image;
+    return stream;
+}
+
+QDataStream &operator>>(QDataStream &stream, ImageDataToFile data)
+{
+    stream >> data.hdrCodNavData >> data.image;
+    return stream;
 }
 
 }

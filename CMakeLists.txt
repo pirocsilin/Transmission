@@ -27,13 +27,13 @@ file(GLOB PROTO_FILES ${CMAKE_HOME_DIRECTORY}/proto/*.proto)
 
 set(ProtocolFolder ${CMAKE_HOME_DIRECTORY}/proto_cxx)
 
-if(EXISTS ${ProtocolFolder})
-    file(REMOVE_RECURSE ${ProtocolFolder})
-endif()
+#if(EXISTS ${ProtocolFolder})
+#    file(REMOVE_RECURSE ${ProtocolFolder})
+#endif()
 
-file(MAKE_DIRECTORY ${ProtocolFolder})
+#file(MAKE_DIRECTORY ${ProtocolFolder})
 
-set(ProtocExecute ${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/bin/protoc.exe)
+set(ProtocExecute ${CMAKE_HOME_DIRECTORY}/protobuf-2.5.0/bin/protoc)
 set(ProtoPath     ${CMAKE_HOME_DIRECTORY}/proto)
 set(ProtoCppOut   ${CMAKE_HOME_DIRECTORY}/proto_cxx)
 
@@ -53,7 +53,9 @@ file(GLOB SRC_FILES ${CMAKE_HOME_DIRECTORY}/*.cpp
                     ${CMAKE_HOME_DIRECTORY}/example/*.cpp
                     ${CMAKE_HOME_DIRECTORY}/proto/*.proto
                     ${CMAKE_HOME_DIRECTORY}/proto_cxx/*.pb.h
-                    ${CMAKE_HOME_DIRECTORY}/proto_cxx/*.pb.cc)
+                    ${CMAKE_HOME_DIRECTORY}/proto_cxx/*.pb.cc
+                    ${CMAKE_HOME_DIRECTORY}/video/*.h
+                    ${CMAKE_HOME_DIRECTORY}/video/*.cpp)
 
 add_executable(Transmission ${SRC_FILES})
 
@@ -64,7 +66,8 @@ set(HDR_FILES ${CMAKE_HOME_DIRECTORY}
               ${PROTO_INCLUDE}
               ${CMAKE_HOME_DIRECTORY}/common
               ${CMAKE_HOME_DIRECTORY}/proto_cxx
-              ${CMAKE_HOME_DIRECTORY}/transceiver)
+              ${CMAKE_HOME_DIRECTORY}/transceiver
+              ${CMAKE_HOME_DIRECTORY}/video)
 
 target_include_directories(Transmission PUBLIC ${HDR_FILES})
 

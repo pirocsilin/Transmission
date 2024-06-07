@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QVector>
+#include <QImage>
 #include <QFile>
 #include "common.h"
 #include "structscod.h"
@@ -39,7 +40,10 @@ private:
 public slots:
     void slotWriteNavData(CodNavDataToFile data);
     void slotWriteCodData(CodDataToFile data);
+    void slotWriteImageData(QByteArray image);
     void slotSwitchStateRecord(bool state);
+
+    void slotWriteToFile(QByteArray);
 
 signals:
     void signalSendLog(QString msg);

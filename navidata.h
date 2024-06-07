@@ -33,8 +33,8 @@ public:
 
 private:
     //
-    QHostAddress srcIpAddress {"37.0.20.15"};
-    quint32 srcPort {5800};
+    QHostAddress srcIpAddress {"127.0.0.1"};    //{"37.0.20.15"};
+    quint32 srcPort {6000};                     //{5800};
     //
     QHostAddress groupIpAddress {"225.0.0.1"};
     quint32 multicastDstPort    {2300};
@@ -76,6 +76,7 @@ signals:
     void signalWriteData(CodNavData);
     void signalWriteData(CodNavDataToFile);
     void signalWriteCodData(CodDataToFile);
+    void writeToFile(QByteArray);
 };
 
 #endif // CONNECTOR_H

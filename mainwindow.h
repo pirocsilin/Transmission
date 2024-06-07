@@ -7,6 +7,8 @@
 #include "navidata.h"
 #include "common/structscod.h"
 #include "common/common.h"
+#include "videoreceiverudp.h"
+#include "myopenglwidget.h"
 #include "logger.h"
 using namespace cod;
 
@@ -35,11 +37,19 @@ protected:
 private:
     Ui::MainWindow *ui;
 
+    QThread videoReceiverThread;
+    std::unique_ptr<VideoReceiverUdp> videoReceiver {nullptr};
+
+    MyOpenGLWidget cameraWidget;
+
+    void prepareVideoThread();
+
 public slots:
     void slotSenderController();
     void slotRecordController();
     void slotWriteLog(QString log);
     void slotWriteData(CodNavData data);
+    void recvMipiImage(QImage image);
 
 signals:
     void signalSendData(bool sign);
